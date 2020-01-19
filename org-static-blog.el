@@ -215,6 +215,10 @@ Depends on org-static-blog-langcode and org-static-blog-texts."
 
 
 ;;;###autoload
+(defun org-static-blog-get-value (x)
+  "Get value from a variable or function"
+  (if (functionp x) (funcall x) (symbol-value x)))
+
 (defun org-static-blog-publish (&optional force-render)
   "Render all blog posts, the index, archive, tags, and RSS feed.
 Only blog posts that changed since the HTML was created are
@@ -482,11 +486,11 @@ The index, archive, tags, and RSS feed are not updated."
     "      href=\"" (org-static-blog-get-absolute-url org-static-blog-rss-file) "\"\n"
     "      title=\"RSS feed for " org-static-blog-publish-url "\"/>\n"
     "<title>" (org-static-blog-get-title post-filename) "</title>\n"
-    org-static-blog-page-header
+	(org-static-blog-get-value 'org-static-blog-page-header)
     "</head>\n"
     "<body>\n"
     "<div id=\"preamble\" class=\"status\">\n"
-    org-static-blog-page-preamble
+	(org-static-blog-get-value 'org-static-blog-page-preamble)
     "</div>\n"
     "<div id=\"content\">\n"
     (org-static-blog-post-preamble post-filename)
@@ -494,7 +498,7 @@ The index, archive, tags, and RSS feed are not updated."
     (org-static-blog-post-postamble post-filename)
     "</div>\n"
     "<div id=\"postamble\" class=\"status\">"
-    org-static-blog-page-postamble
+	(org-static-blog-get-value 'org-static-blog-page-postamble)
     "</div>\n"
     "</body>\n"
     "</html>\n")))
@@ -550,11 +554,11 @@ Posts are sorted in descending time."
     "      href=\"" (org-static-blog-get-absolute-url org-static-blog-rss-file) "\"\n"
     "      title=\"RSS feed for " org-static-blog-publish-url "\"/>\n"
     "<title>" org-static-blog-publish-title "</title>\n"
-    org-static-blog-page-header
+	(org-static-blog-get-value ' org-static-blog-page-header)
     "</head>\n"
     "<body>\n"
     "<div id=\"preamble\" class=\"status\">"
-    org-static-blog-page-preamble
+	(org-static-blog-get-value 'org-static-blog-page-preamble)
     "</div>\n"
     "<div id=\"content\">\n"
     (when front-matter front-matter)
@@ -667,11 +671,11 @@ blog post, but no post body."
       "      href=\"" (org-static-blog-get-absolute-url org-static-blog-rss-file) "\"\n"
       "      title=\"RSS feed for " org-static-blog-publish-url "\">\n"
       "<title>" org-static-blog-publish-title "</title>\n"
-      org-static-blog-page-header
+	  (org-static-blog-get-value 'org-static-blog-page-header)
       "</head>\n"
       "<body>\n"
       "<div id=\"preamble\" class=\"status\">\n"
-      org-static-blog-page-preamble
+      (org-static-blog-get-value 'org-static-blog-page-preamble)
       "</div>\n"
       "<div id=\"content\">\n"
       "<h1 class=\"title\">" (org-static-blog-gettext 'archive) "</h1>\n"
@@ -729,11 +733,11 @@ blog post, sorted by tags, but no post body."
       "      href=\"" (org-static-blog-get-absolute-url org-static-blog-rss-file) "\"\n"
       "      title=\"RSS feed for " org-static-blog-publish-url "\">\n"
       "<title>" org-static-blog-publish-title "</title>\n"
-      org-static-blog-page-header
+      (org-static-blog-get-value 'org-static-blog-page-header)
       "</head>\n"
       "<body>\n"
       "<div id=\"preamble\" class=\"status\">"
-      org-static-blog-page-preamble
+      (org-static-blog-get-value 'org-static-blog-page-preamble)
       "</div>\n"
       "<div id=\"content\">\n"
       "<h1 class=\"title\">" (org-static-blog-gettext 'tags) "</h1>\n"
