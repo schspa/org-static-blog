@@ -348,11 +348,17 @@ Preamble and Postamble are excluded, too."
           (taglist-end))
       (goto-char (point-min))
       (setq title-start (search-forward "<div id=\"content\">"))
+	  (search-forward "class=\"col-12 col-md-3\" id=\"post-post-padding-col\"")
+	  (replace-match "class=\"col-12\" id=\"post-post-padding-col\"")
+	  (search-forward "class=\"col-9 col-md-7\" id=\"post-post-title-col\"")
+	  (replace-match "class=\"col-9\" id=\"post-post-title-col\"")
       (when org-static-blog-preview-convert-titles
         (search-forward "<h1 class=\"post-title\">")
         (replace-match "<h2 class=\"post-title\">")
         (search-forward "</h1>")
         (replace-match "</h2>"))
+	  (search-forward "class=\"col-3 col-md-2\" id=\"post-post-date-col\"")
+	  (replace-match "class=\"col-3\" id=\"post-post-date-col\"")
       (when (search-forward "<p>" nil t)
         (search-forward "</p>")) ;; Find where the first paragraph ends
       (setq first-paragraph-end (point))
@@ -494,7 +500,21 @@ The index, archive, tags, and RSS feed are not updated."
     "</div>\n"
     "<div id=\"content\">\n"
     (org-static-blog-post-preamble post-filename)
-    (org-static-blog-render-post-content post-filename)
+	"<div class=\"row\">"
+	"    <div class=\"col-12 col-md-3\" id=\"content-toc-col\"></div>"
+	"    <div class=\"col-12 col-md-9\" id=\"content-main-col\"></div>"
+	"</div>"
+    "<div id=\"content-main\">\n"
+	(org-static-blog-render-post-content post-filename)
+	"</div>"
+	"<script>\n"
+	"  document.getElementById('content-toc-col').appendChild(\n"
+    "      document.getElementById('table-of-contents')\n"
+	"  );\n"
+	"  document.getElementById('content-main-col').appendChild(\n"
+    "      document.getElementById('content-main')\n"
+	"  );\n"
+	"</script>"
     (org-static-blog-post-postamble post-filename)
     "</div>\n"
     "<div id=\"postamble\" class=\"status\">"
@@ -541,7 +561,7 @@ posts as full text posts."
   "Assemble a page that contains multiple posts one after another.
 Posts are sorted in descending time."
   (setq post-filenames (sort post-filenames (lambda (x y) (time-less-p (org-static-blog-get-date y)
-                                                                  (org-static-blog-get-date x)))))
+																	   (org-static-blog-get-date x)))))
   (org-static-blog-with-find-file
    pub-filename
    (concat
@@ -578,12 +598,19 @@ Posts are sorted in descending time."
 This function is called for every post and prepended to the post body.
 Modify this function if you want to change a posts headline."
   (concat
-   "<div class=\"post-date\">" (format-time-string (org-static-blog-gettext 'date-format)
-						   (org-static-blog-get-date post-filename))
+   "<div class=\"row\">"
+   "    <div class=\"col-12 col-md-3\" id=\"post-post-padding-col\"></div>"
+   "    <div class=\"col-9 col-md-7\" id=\"post-post-title-col\">"
+   "        <h1 class=\"post-title\">"
+   "            <a href=\"" (org-static-blog-get-post-url post-filename) "\">" (org-static-blog-get-title post-filename) "</a>"
+   "        </h1>\n"
+   "    </div>"
+   "    <div class=\"col-3 col-md-2\" id=\"post-post-date-col\">"
+   "        <div class=\"post-date\">" (format-time-string (org-static-blog-gettext 'date-format))
+   "        </div>"
+   "    </div>"
    "</div>"
-   "<h1 class=\"post-title\">"
-   "<a href=\"" (org-static-blog-get-post-url post-filename) "\">" (org-static-blog-get-title post-filename) "</a>"
-   "</h1>\n"))
+   "\n"))
 
 (defun org-static-blog-post-postamble (post-filename)
   "Returns the tag list of the post.
